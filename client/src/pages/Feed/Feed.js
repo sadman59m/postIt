@@ -119,7 +119,7 @@ class Feed extends Component {
       },
       body: JSON.stringify({
         title: postData.title,
-        constent: postData.content,
+        content: postData.content,
       }),
     })
       .then((res) => {

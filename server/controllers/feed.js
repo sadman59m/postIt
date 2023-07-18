@@ -3,35 +3,32 @@ const { validationResult } = require("express-validator");
 const Post = require("../models/post");
 
 exports.getPosts = (req, res, next) => {
-  res.status(200).json({
-    posts: [
-      {
-        _id: "1",
-        title: "First Post",
-        content: "this is about the first post",
-        image: "images/boat.png",
-        creator: {
-          name: "Sadman",
-        },
-        createdAt: new Date(),
-      },
-    ],
-  });
+  Post.find()
+    .then((posts) => {
+      res.status(200).json({
+        message: "posts fetched successfully",
+        posts: posts,
+      });
+    })
+    .catch((err) => {
+      if (!err.statusCode) {
+        err.statusCode = 500;
+      }
+      next(err);
+    });
 };
 
 exports.createPost = (req, res, next) => {
   const errors = validationResult(req);
 
   if (!errors.isEmpty()) {
-    console.log(errors);
-    return res.status(422).json({
-      message: "validation failed. title must be 5 char.",
-      errors: errors.array(),
-    });
+    const error = new Error("validation failed.");
+    error.statusCode = 422;
+    throw error;
   }
 
   const title = req.body.title;
-  const content = req.body.constent;
+  const content = req.body.content;
 
   const post = new Post({
     title: title,
@@ -51,6 +48,28 @@ exports.createPost = (req, res, next) => {
       });
     })
     .catch((err) => {
-      console.log(err);
+      if (!err.statusCode) {
+        err.statusCode = 500;
+      }
+      next(err);
+    });
+};
+
+exports.getPost = (req, res, next) => {
+  const postId = req.params.postId;
+  Post.findById(postId)
+    .then((post) => {
+      if (!post) {
+        const error = new Error("Post not found.");
+        error.statusCode = 404;
+        throw error; // next catch block will catch this error
+      }
+      res.status(200).json({ message: "Post found", post: post });
+    })
+    .catch((err) => {
+      if (!err.statusCode) {
+        err.statusCode = 500;
+      }
+      next(err);
     });
 };
