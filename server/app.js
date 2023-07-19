@@ -9,6 +9,7 @@ const multer = require("multer");
 const app = express();
 
 const feedRoute = require("./routes/feed");
+const authRoute = require("./routes/auth");
 
 const fileStorage = multer.diskStorage({
   destination: function (req, file, cb) {
@@ -48,13 +49,16 @@ app.use((req, res, next) => {
 });
 
 app.use("/feed", feedRoute);
+app.use("/auth", authRoute);
 
 app.use((error, req, res, next) => {
   console.log(error);
   const status = error.statusCode || 500;
   const message = error.message;
+  const data = error.data;
   res.status(status).json({
     message: message,
+    data: data,
   });
 });
 
