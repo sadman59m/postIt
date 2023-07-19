@@ -8,10 +8,15 @@ const routeCheck = require("../middleware/is_auth");
 
 router.get("/posts", routeCheck.isAuth, feedController.getPosts);
 
-router.post("/post", routeCheck.isAuth, [
-  body("title").trim().isLength({ min: 5 }),
-  body("content").trim().isLength({ min: 5 }),
-]);
+router.post(
+  "/post",
+  routeCheck.isAuth,
+  [
+    body("title").trim().isLength({ min: 5 }),
+    body("content").trim().isLength({ min: 5 }),
+  ],
+  feedController.createPost
+);
 
 router.get("/post/:postId", routeCheck.isAuth, feedController.getPost);
 
