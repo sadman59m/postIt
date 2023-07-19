@@ -8,15 +8,16 @@ const routeCheck = require("../middleware/is_auth");
 
 router.get("/posts", routeCheck.isAuth, feedController.getPosts);
 
-router.post("/post", [
+router.post("/post", routeCheck.isAuth, [
   body("title").trim().isLength({ min: 5 }),
   body("content").trim().isLength({ min: 5 }),
 ]);
 
-router.get("/post/:postId", feedController.getPost);
+router.get("/post/:postId", routeCheck.isAuth, feedController.getPost);
 
 router.put(
   "/post/:postId",
+  routeCheck.isAuth,
   [
     body("title").trim().isLength({ min: 5 }),
     body("content").trim().isLength({ min: 5 }),
@@ -24,6 +25,6 @@ router.put(
   feedController.updatePost
 );
 
-router.delete("/post/:postId", feedController.deletePost);
+router.delete("/post/:postId", routeCheck.isAuth, feedController.deletePost);
 
 module.exports = router;
