@@ -5,6 +5,7 @@ const { validationResult } = require("express-validator");
 
 const Post = require("../models/post");
 const User = require("../models/user");
+const io = require("../socket");
 
 exports.getPosts = async (req, res, next) => {
   const currentPage = req.query.page || 1;
@@ -14,6 +15,7 @@ exports.getPosts = async (req, res, next) => {
     const totalItems = await Post.find().countDocuments();
     const posts = await Post.find()
       .populate("creator", ["name", "email"])
+      .sort({ createdAt: -1 })
       .skip((currentPage - 1) * perPage)
       .limit(perPage);
 
@@ -97,6 +99,11 @@ exports.createPost = (req, res, next) => {
       return user.save();
     })
     .then((result) => {
+      io.getI0().emit("posts", {
+        action: "create",
+        post: { ...post._doc, creator: { id: req.userId, name: result.name } },
+        creator: { _id: result._id, name: result.name },
+      });
       res.status(201).json({
         message: "Post created Successfully",
         post: post,
@@ -153,14 +160,18 @@ exports.updatePost = (req, res, next) => {
     throw error;
   }
 
+  let updatedPost;
+
   Post.findById(postId)
+    .populate("creator")
     .then((post) => {
+      updatedPost = post;
       if (!post) {
         const error = new Error("Post not found.");
         error.statusCode = 404;
         throw error;
       }
-      if (post.creator.toString() !== req.userId) {
+      if (post.creator._id.toString() !== req.userId) {
         const error = new Error("Not authorized");
         error.statusCode = 401;
         throw error;
@@ -174,6 +185,17 @@ exports.updatePost = (req, res, next) => {
       return post.save();
     })
     .then((result) => {
+      io.getI0().emit("posts", {
+        action: "update",
+        post: {
+          ...updatedPost._doc,
+          creator: { id: req.userId, name: updatedPost.creator.name },
+        },
+        creator: {
+          _id: updatedPost.creator._id,
+          name: updatedPost.creator.name,
+        },
+      });
       res.status(200).json({
         message: "Post update Successful",
         post: result,
