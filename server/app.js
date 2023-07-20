@@ -44,7 +44,7 @@ app.use((req, res, next) => {
     "Access-Control-Allow-Methods",
     "GET, POST, PUT, PATCH, DELETE"
   );
-  res.setHeader("Access-Control-Allow-Headers", "Content-Type, Authorization");
+  res.setHeader("Access-Control-Allow-Headers", "*");
   next();
 });
 
@@ -67,8 +67,17 @@ mongoose
     "mongodb+srv://sadman:sadman@cluster0.m9clocs.mongodb.net/messages?retryWrites=true&w=majority"
   )
   .then((result) => {
-    console.log("connected");
-    app.listen(8080);
+    // console.log("connected");
+    const server = app.listen(8080);
+    const io = require("socket.io")(server, {
+      cors: {
+        origin: "http://localhost:3000",
+        // methods: ["GET", "POST", "PUT", "DELETE"],
+      },
+    });
+    io.on("connection", (socket) => {
+      console.log("client connected.");
+    });
   })
   .catch((err) => {
     console.log(err);
