@@ -73,7 +73,7 @@ mongoose
     "mongodb+srv://sadman:sadman@cluster0.m9clocs.mongodb.net/messages?retryWrites=true&w=majority"
   )
   .then((result) => {
-    // console.log("connected");
+    console.log("connected");
     app.listen(8080);
   })
   .catch((err) => {
