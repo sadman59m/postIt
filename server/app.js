@@ -5,11 +5,12 @@ const bodyParser = require("body-parser");
 const mongoose = require("mongoose");
 const multer = require("multer");
 // const { v4: uuidv4 } = require("uuid");
+const { graphqlHTTP } = require("express-graphql");
+
+const graphqlSchema = require("./graphql/schema");
+const graphqlResolver = require("./graphql/resolver");
 
 const app = express();
-
-const feedRoute = require("./routes/feed");
-const authRoute = require("./routes/auth");
 
 const fileStorage = multer.diskStorage({
   destination: function (req, file, cb) {
@@ -48,8 +49,13 @@ app.use((req, res, next) => {
   next();
 });
 
-app.use("/feed", feedRoute);
-app.use("/auth", authRoute);
+app.use(
+  "/graphql",
+  graphqlHTTP({
+    schema: graphqlSchema,
+    rootValue: graphqlResolver,
+  })
+);
 
 app.use((error, req, res, next) => {
   console.log(error);
@@ -68,11 +74,7 @@ mongoose
   )
   .then((result) => {
     // console.log("connected");
-    const server = app.listen(8080);
-    const io = require("./socket").init(server);
-    io.on("connection", (socket) => {
-      console.log("client connected.");
-    });
+    app.listen(8080);
   })
   .catch((err) => {
     console.log(err);
