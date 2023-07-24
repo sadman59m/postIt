@@ -64,7 +64,7 @@ app.use((error, req, res, next) => {
 
 mongoose
   .connect(
-    "mongodb+srv://sadman:sadman@cluster0.m9clocs.mongodb.net/messages?retryWrites=true&w=majority"
+    "mongodb+srv://${process.env.U}:{process.env.P}@cluster0.m9clocs.mongodb.net/{process.env.DB}?retryWrites=true&w=majority"
   )
   .then((result) => {
     // console.log("connected");
