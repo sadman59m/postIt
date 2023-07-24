@@ -1,3 +1,12 @@
 # Simple Blogging site
+A blogging site where users can see posts from all other users. User can create post, update post, and delete his own post.
+I have built the backend for this project.
+- Implemented REST API and basic graphQL query and mutation.
+- User authentication using JWT token.
+- CURD operation on post.
 
-I've worked on the back-end of this project. Front-end was pre-built. I tried to implement the rest API features to communicate with the front-end.
+# Tech Stack Used:
+- Node.js
+- Express.js
+- MongoDB
+- Mongoose
