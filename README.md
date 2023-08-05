@@ -1,3 +1,3 @@
 # PostIt
 
-Sharing is caring. Post on this website and share your thoughts with others.
+Sharing is caring. Sharing your thoughts with others is one post away.
